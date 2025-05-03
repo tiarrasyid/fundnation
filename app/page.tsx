@@ -1,102 +1,128 @@
+import Navbar from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-[#EFEEEA]">
+      <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Hero Section */}
+      <section className="pt-32 pb-0 text-center px-4 relative">
+        <div className="max-w-5xl mx-auto relative z-10">
+          <h1 className="text-[70px] font-sen-bold mb-8 leading-tight text-[#222222]">
+            Support Great Ideas,<br />
+            Make Them Happen Together.
+          </h1>
+          <p className="text-[24px] text-[#5F5F75] mb-16">
+            We believe every idea is worth fighting for.
+          </p>
+
+          <div className="flex gap-[70px] justify-center">
+            <Button
+              className="w-[220px] h-[60px] bg-[#169976] text-[#EFEEEA] text-xl font-bold rounded-[15px] hover:bg-[#138a69]"
+            >
+              Get Started
+            </Button>
+
+            <Button
+              className="w-[220px] h-[60px] bg-[#EFEEEA] text-[#169976] text-xl font-bold rounded-[15px] border-2 border-[#169976] hover:bg-[#f2f2f0]"
+            >
+              Explore
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+
+        {/* Ilustrasi bawah */}
+        <div className="relative mt-20 z-0">
           <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src="/images/pict1.svg"
+            alt="Hero Illustration"
+            width={1200}
+            height={600}
+            className="mx-auto"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-24 px-4 bg-[#F1F0ED] flex justify-center">
+        <div className="bg-[#FFFFFF] w-[1400px] min-h-[800px] rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] p-20">
+          <div className="text-center mb-16">
+            <h2 className="text-[48px] font-sen-bold text-[#222222] mb-6">
+              Start your campaign today
+            </h2>
+            <p className="text-[24px] text-[#5F5F75]">
+              Campoal has a variety of features that make it the best place to start a petition.
+            </p>
+          </div>
+
+          <div className="flex justify-between items-start gap-16">
+            <div className="flex flex-col gap-16 w-[600px]">
+              {/* Item 1 */}
+              <div className="flex gap-6 items-start">
+                <div className="bg-[#1AA179] p-4 rounded-full">
+                  <img src="/icons/chart-area.svg" alt="Manage" className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-[32px] font-sen-bold text-[#222222] mb-4">
+                    Manage your campaigns
+                  </h3>
+                  <p className="text-[20px] text-[#5F5F75] leading-relaxed">
+                    Track how many people signed the petition by week, month, year.
+                  </p>
+                </div>
+              </div>
+
+              {/* Item 2 */}
+              <div className="flex gap-6 items-start">
+                <div className="bg-[#1AA179] p-4 rounded-full">
+                  <img src="/icons/circle-dollar-sign.svg" alt="Donation" className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-[32px] font-sen-bold text-[#222222] mb-4">
+                    Collecting donation
+                  </h3>
+                  <p className="text-[20px] text-[#5F5F75] leading-relaxed">
+                    Campaign owners can set up donations to receive donations from supporters.
+                  </p>
+                </div>
+              </div>
+
+              {/* Item 3 */}
+              <div className="flex gap-6 items-start">
+                <div className="bg-[#1AA179] p-4 rounded-full">
+                  <img src="/icons/file-down.svg" alt="Export" className="w-8 h-8" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-[32px] font-sen-bold text-[#222222] mb-4">
+                    Export Signature
+                  </h3>
+                  <p className="text-[20px] text-[#5F5F75] leading-relaxed">
+                    Download the signatures of supporters and submit to the decision makers.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Illustration */}
+            <div className="w-[600px] h-[600px] relative">
+              <Image
+                src="/images/syct.svg"
+                alt="Campaign Illustration"
+                fill
+                className="object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="h-[120px] bg-[#111111] flex items-center px-[60px]">
+        <p className="text-[#EFEEEA] text-[24px] font-sen-bold">
+          FundNation © 2025.
+        </p>
       </footer>
     </div>
   );

@@ -1,26 +1,80 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definisi variabel warna */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-dark: #222222;
+  --brand-primary: #169976;
+  --brand-accent: #1DCD9F;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Reset CSS dan base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Sen', sans-serif; /* Ganti Arial dengan Sen */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  background-color: var(--brand-dark);
+  color: #FFFFFF;
+}
+
+.nav-item.active {
+  color: var(--brand-accent);
+  border-bottom: 2px solid var(--brand-accent);
+}
+
+/* Button styles */
+.creator-btn {
+  background-color: var(--brand-primary);
+  border-radius: 15px;
+  width: 166px;
+  height: 50px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* Hero section */
+.hero-section h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+}
+
+/* Fitur cards */
+.feature-card {
+  background: #FFFFFF;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Footer */
+.footer {
+  background: #f8f9fa;
+  color: #7f8c8d;
+}
+
+.font-sen-bold {
+  font-family: 'Sen', sans-serif;
+  font-weight: 700;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Sen', sans-serif;
+  background: #222222;
+}
+
+@layer components {
+  .btn-primary {
+    @apply transition-colors duration-300;
+  }
 }
