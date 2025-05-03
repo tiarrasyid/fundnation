@@ -53,16 +53,15 @@ const Navbar = () => {
           gap: 40px;
         }
 
-        .nav-item {
+        .nav-items {
+          display: flex;
+          gap: 40px;
           font-family: 'Sen', sans-serif;
           font-weight: 700;
           font-size: 20px;
           color: #FFFFFF;
-          text-decoration: none;
-          position: relative;
-          padding: 8px 0;
-          transition: color 0.3s ease;
         }
+
 
         .nav-item.active {
           color: #1DCD9F;
