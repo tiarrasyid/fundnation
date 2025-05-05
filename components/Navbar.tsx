@@ -1,18 +1,25 @@
 "use client";
 
+import { UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Fungsi untuk menentukan path berdasarkan nama item
   const getPathForItem = (item: string) => {
-    switch(item) {
-      case 'Home': return '/';
-      case 'Projects': return '/product';
-      case 'About Us': return '/about_us';
-      default: return '/';
+    switch (item) {
+      case 'Home':
+        return '/';
+      case 'Projects':
+        return '/product';
+      case 'About Us':
+        return '/about_us';
+      default:
+        return '/';
     }
   };
 
@@ -37,9 +44,22 @@ const Navbar = () => {
       {/* Auth Buttons */}
       <div className="auth-buttons">
         <button className="creator-btn">For Creators</button>
-        <button className="login-btn">Login</button>
+
+        <SignedOut>
+          <button
+            className="login-btn"
+            onClick={() => router.push('/sign-in')}
+          >
+            Login
+          </button>
+        </SignedOut>
+
+        <SignedIn>
+          <UserButton afterSignOutUrl="/sign-in" />
+        </SignedIn>
       </div>
 
+      {/* Style */}
       <style jsx>{`
         .navbar {
           display: flex;
@@ -67,7 +87,7 @@ const Navbar = () => {
         }
 
         .nav-item {
-          position: relative; /* Diperlukan untuk garis bawah aktif */
+          position: relative;
           text-decoration: none;
           color: inherit;
         }
@@ -79,7 +99,7 @@ const Navbar = () => {
         .nav-item.active::after {
           content: '';
           position: absolute;
-          bottom: -10px; /* Sesuaikan posisi garis bawah */
+          bottom: -10px;
           left: 0;
           width: 100%;
           height: 3px;
