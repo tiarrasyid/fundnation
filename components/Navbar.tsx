@@ -1,10 +1,20 @@
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
-  const [activeTab, setActiveTab] = useState('Home');
+  const pathname = usePathname();
+
+  // Fungsi untuk menentukan path berdasarkan nama item
+  const getPathForItem = (item: string) => {
+    switch(item) {
+      case 'Home': return '/';
+      case 'Projects': return '/product';
+      case 'About Us': return '/about_us';
+      default: return '/';
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -15,10 +25,9 @@ const Navbar = () => {
       <div className="nav-items">
         {['Home', 'Projects', 'About Us'].map((item) => (
           <Link
-            href="#"
+            href={getPathForItem(item)}
             key={item}
-            className={`nav-item ${activeTab === item ? 'active' : ''}`}
-            onClick={() => setActiveTab(item)}
+            className={`nav-item ${pathname === getPathForItem(item) ? 'active' : ''}`}
           >
             {item}
           </Link>
@@ -51,20 +60,30 @@ const Navbar = () => {
         .nav-items {
           display: flex;
           gap: 40px;
-        }
-
-        .nav-items {
-          display: flex;
-          gap: 40px;
           font-family: 'Sen', sans-serif;
           font-weight: 700;
           font-size: 20px;
           color: #FFFFFF;
         }
 
+        .nav-item {
+          position: relative; /* Diperlukan untuk garis bawah aktif */
+          text-decoration: none;
+          color: inherit;
+        }
 
         .nav-item.active {
           color: #1DCD9F;
+        }
+
+        .nav-item.active::after {
+          content: '';
+          position: absolute;
+          bottom: -10px; /* Sesuaikan posisi garis bawah */
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background-color: #1DCD9F;
         }
 
         .auth-buttons {
@@ -96,16 +115,6 @@ const Navbar = () => {
           border: none;
           cursor: pointer;
           padding: 0 15px;
-        }
-
-        .nav-item.active::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background-color: #1DCD9F;
         }
       `}</style>
     </nav>
