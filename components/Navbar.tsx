@@ -43,7 +43,9 @@ const Navbar = () => {
 
       {/* Auth Buttons */}
       <div className="auth-buttons">
-        <button className="creator-btn">For Creators</button>
+        <button className="creator-btn" onClick={() => router.push('/creators')}>
+          For Creators
+        </button>
 
         <SignedOut>
           <button
