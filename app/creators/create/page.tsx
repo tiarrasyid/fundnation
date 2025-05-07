@@ -18,6 +18,16 @@ export default function CreateNewProject() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [notification, setNotification] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
@@ -27,15 +37,22 @@ export default function CreateNewProject() {
     if (!formData.description.trim()) newErrors.description = 'Description is required';
     if (!formData.donation) newErrors.donation = 'Donation target is required';
     if (!formData.deadline) newErrors.deadline = 'Deadline is required';
+    if (formData.media.length === 0) newErrors.media = 'At least one media file is required';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      showNotification('error', 'Please fill in all required fields ');
       return;
     }
 
-    // Handle form submission logic here
+    // Simulasi submit sukses
     console.log('Form data:', formData);
-    router.push('/creators');
+    showNotification('success', 'Project created successfully ');
+
+    // Redirect setelah submit sukses
+    setTimeout(() => {
+      router.push('/creators');
+    }, 1000);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,12 +71,20 @@ export default function CreateNewProject() {
   return (
     <div className="min-h-screen bg-[#EFEEEA]">
       <Navbar />
+      {notification && (
+        <div className={`bg-[#FFFFFF] mt-[50px] w-[300px] h-[50px] fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-4 rounded-[10px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.50)] flex justify-center items-center gap-2
+          ${notification.type === 'success' ? 'bg-green-700 text-white' : 'bg-red-700 text-white'} z-50`}>
+          <span>{notification.message}</span>
+          <span>{notification.type === 'success' ? '✅' : '❌'}</span>
+        </div>
+      )}
+
 
       <section className="py-24 px-6 bg-[#EFEEEA] flex justify-center relative text-center pt-[120px] pb-[120px]">
         <div className="flex lg:flex-row items-start gap-20 pl-[120px] ">
           {/* Form Section */}
           <div className="w-[800px] mr-[20px] bg-[#FFFFFF] rounded-[30px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] text-left flex flex-col p-[50px]">
-            <h1 className="text-3xl font-bold mb-[10px]">Create New Project</h1>
+            <h1 className="text-3xl font-bold mb-[20px]">Create New Project</h1>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Project Name */}
@@ -67,7 +92,7 @@ export default function CreateNewProject() {
                 <label className="block text-lg font-medium mb-2">Project Name *</label>
                 <input
                   type="text"
-                  className={`w-full p-3 border rounded-[15px] h-[36px] mt-[10px] mb-[10px] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-[15px] pl-[10px] pr-[10px] h-[36px] mt-[10px] mb-[10px] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -92,7 +117,7 @@ export default function CreateNewProject() {
               <div>
                 <label className="block text-lg font-medium mb-2">Description *</label>
                 <textarea
-                  className={`w-full p-3 border rounded-[15px] h-[64px] mt-[10px] mb-[10px] ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-[15px] h-[64px] pl-[10px] pt-[10px] pr-[10px] pb-[10px] mt-[10px] mb-[10px] ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
@@ -106,7 +131,7 @@ export default function CreateNewProject() {
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 pl-[10]">Rp</span>
                   <input
                     type="number"
-                    className={`w-full pl-10 p-3 border rounded-[15px] h-[36px] mt-[10px] mb-[10px] ${errors.donation ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full pl-10 p-3 border rounded-[15px] h-[36px] pl-[33px] mt-[10px] mb-[10px] ${errors.donation ? 'border-red-500' : 'border-gray-300'}`}
                     value={formData.donation}
                     onChange={(e) => setFormData({ ...formData, donation: e.target.value })}
                   />
@@ -129,8 +154,8 @@ export default function CreateNewProject() {
               {/* Notes */}
               <div>
                 <label className="block text-lg font-medium mb-2">Notes (Optional)</label>
-                <textarea
-                  className="w-full p-3 border border-gray-300 rounded-[15px] h-[36px] mt-[10px] mb-[10px]"
+                <input
+                  className="w-full p-3 border border-gray-300 rounded-[15px] h-[36px] pl-[10px] pr-[10px] mt-[10px] mb-[10px]"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
@@ -139,7 +164,7 @@ export default function CreateNewProject() {
               {/* Media Upload */}
               <div>
                 <label className="block text-lg font-medium mb-2">Upload Media (Images/Video)</label>
-                <label className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer">
+                <label className="w-full p-4 border-2 border-dashed border-gray-300 rounded-[15px] h-[92px] mt-[10px] mb-[10px] flex flex-col items-center justify-center cursor-pointer">
                   <PlusCircle className="w-8 h-8 text-gray-400 mb-2" />
                   <span className="text-gray-600">Click to upload or drag and drop</span>
                   <input
@@ -151,6 +176,7 @@ export default function CreateNewProject() {
                   />
                 </label>
                 <div className="mt-4 grid grid-cols-3 gap-2">
+                {errors.media && <p className="text-red-500 text-sm mt-1 w-[300px]">{errors.media}</p>}
                   {formData.media.map((file, index) => (
                     <div key={index} className="relative group">
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -159,6 +185,7 @@ export default function CreateNewProject() {
                           className="text-white"
                           onClick={() => removeFile(index)}
                         >
+                          {errors.media && <p className="text-red-500 text-sm mt-1">{errors.deadline}</p>}
                           <XCircle className="w-6 h-6" />
                         </button>
                       </div>
@@ -199,7 +226,7 @@ export default function CreateNewProject() {
           </div>
 
           {/* Image Section */}
-          <div className="relative mt-20 z-0 pb-[100px] w-full ml-[20px]">
+          <div className="relative mt-20 z-0 pb-[100px] w-full ml-[20px] pt-[200px]">
             <Image
               src="/images/projections.svg"
               alt="Project Illustration"
