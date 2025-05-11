@@ -1,29 +1,29 @@
-'use client';
-import { useState } from 'react';
-import Navbar from '@/components/Navbar';
+"use client";
+import { useState } from "react";
+import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
-import { PlusCircle, XCircle } from 'lucide-react';
+import { useRouter } from "next/navigation";
+import { PlusCircle, XCircle } from "lucide-react";
 
 export default function CreateNewProject() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    category: 'Tech',
-    description: '',
-    donation: '',
-    deadline: '',
-    notes: '',
-    media: [] as File[]
+    name: "",
+    category: "Tech",
+    description: "",
+    donation: "",
+    deadline: "",
+    notes: "",
+    media: [] as File[],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [notification, setNotification] = useState<{
-    type: 'success' | 'error';
+    type: "success" | "error";
     message: string;
   } | null>(null);
 
-  const showNotification = (type: 'success' | 'error', message: string) => {
+  const showNotification = (type: "success" | "error", message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
   };
@@ -33,25 +33,27 @@ export default function CreateNewProject() {
     const newErrors: Record<string, string> = {};
 
     // Validasi required fields
-    if (!formData.name.trim()) newErrors.name = 'Project name is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.donation) newErrors.donation = 'Donation target is required';
-    if (!formData.deadline) newErrors.deadline = 'Deadline is required';
-    if (formData.media.length === 0) newErrors.media = 'At least one media file is required';
+    if (!formData.name.trim()) newErrors.name = "Project name is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    if (!formData.donation) newErrors.donation = "Donation target is required";
+    if (!formData.deadline) newErrors.deadline = "Deadline is required";
+    if (formData.media.length === 0)
+      newErrors.media = "At least one media file is required";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      showNotification('error', 'Please fill in all required fields ');
+      showNotification("error", "Please fill in all required fields ");
       return;
     }
 
     // Simulasi submit sukses
-    console.log('Form data:', formData);
-    showNotification('success', 'Project created successfully ');
+    console.log("Form data:", formData);
+    showNotification("success", "Project created successfully ");
 
     // Redirect setelah submit sukses
     setTimeout(() => {
-      router.push('/creators');
+      router.push("/creators");
     }, 1000);
   };
 
@@ -72,40 +74,57 @@ export default function CreateNewProject() {
     <div className="min-h-screen bg-[#EFEEEA]">
       <Navbar />
       {notification && (
-        <div className={`bg-[#FFFFFF] mt-[50px] w-[300px] h-[50px] fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-4 rounded-[10px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.50)] flex justify-center items-center gap-2
-          ${notification.type === 'success' ? 'bg-green-700 text-white' : 'bg-red-700 text-white'} z-50`}>
+        <div
+          className={`bg-[#FFFFFF] mt-[50px] w-[300px] h-[50px] fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-4 rounded-[10px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.50)] flex justify-center items-center gap-2
+          ${
+            notification.type === "success"
+              ? "bg-green-700 text-white"
+              : "bg-red-700 text-white"
+          } z-50`}
+        >
           <span>{notification.message}</span>
-          <span>{notification.type === 'success' ? '✅' : '❌'}</span>
+          <span>{notification.type === "success" ? "✅" : "❌"}</span>
         </div>
       )}
-
 
       <section className="py-24 px-6 bg-[#EFEEEA] flex justify-center relative text-center pt-[120px] pb-[120px]">
         <div className="flex lg:flex-row items-start gap-20 pl-[120px] ">
           {/* Form Section */}
           <div className="w-[800px] mr-[20px] bg-[#FFFFFF] rounded-[30px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] text-left flex flex-col p-[50px]">
             <h1 className="text-3xl font-bold mb-[20px]">Create New Project</h1>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Project Name */}
               <div>
-                <label className="block text-lg font-medium mb-2">Project Name *</label>
+                <label className="block text-lg font-medium mb-2">
+                  Project Name *
+                </label>
                 <input
                   type="text"
-                  className={`w-full p-3 border rounded-[15px] pl-[10px] pr-[10px] h-[36px] mt-[10px] mb-[10px] ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-[15px] pl-[10px] pr-[10px] h-[36px] mt-[10px] mb-[10px] ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  }`}
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                )}
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-lg font-medium mb-2">Category *</label>
+                <label className="block text-lg font-medium mb-2">
+                  Category *
+                </label>
                 <select
                   className="w-full p-3 border border-gray-300 rounded-[15px] h-[36px] mt-[10px] mb-[10px] pl-[10]"
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
                 >
                   <option value="Food">Food</option>
                   <option value="Tech">Tech</option>
@@ -115,58 +134,94 @@ export default function CreateNewProject() {
 
               {/* Description */}
               <div>
-                <label className="block text-lg font-medium mb-2">Description *</label>
+                <label className="block text-lg font-medium mb-2">
+                  Description *
+                </label>
                 <textarea
-                  className={`w-full p-3 border rounded-[15px] h-[64px] pl-[10px] pt-[10px] pr-[10px] pb-[10px] mt-[10px] mb-[10px] ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-[15px] h-[64px] pl-[10px] pt-[10px] pr-[10px] pb-[10px] mt-[10px] mb-[10px] ${
+                    errors.description ? "border-red-500" : "border-gray-300"
+                  }`}
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                 />
-                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                {errors.description && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.description}
+                  </p>
+                )}
               </div>
 
               {/* Donation Target */}
               <div>
-                <label className="block text-lg font-medium mb-2">Donation Target (IDR) *</label>
+                <label className="block text-lg font-medium mb-2">
+                  Donation Target (IDR) *
+                </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 pl-[10]">Rp</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 pl-[10]">
+                    Rp
+                  </span>
                   <input
                     type="number"
-                    className={`w-full pl-10 p-3 border rounded-[15px] h-[36px] pl-[33px] mt-[10px] mb-[10px] ${errors.donation ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full pl-10 p-3 border rounded-[15px] h-[36px] pl-[33px] mt-[10px] mb-[10px] ${
+                      errors.donation ? "border-red-500" : "border-gray-300"
+                    }`}
                     value={formData.donation}
-                    onChange={(e) => setFormData({ ...formData, donation: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, donation: e.target.value })
+                    }
                   />
                 </div>
-                {errors.donation && <p className="text-red-500 text-sm mt-1">{errors.donation}</p>}
+                {errors.donation && (
+                  <p className="text-red-500 text-sm mt-1">{errors.donation}</p>
+                )}
               </div>
 
               {/* Deadline */}
               <div>
-                <label className="block text-lg font-medium mb-2">Deadline *</label>
+                <label className="block text-lg font-medium mb-2">
+                  Deadline *
+                </label>
                 <input
                   type="date"
-                  className={`w-full p-3 border rounded-[15px] h-[36px] mt-[10px] mb-[10px] pr-[10] pl-[10] ${errors.deadline ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full p-3 border rounded-[15px] h-[36px] mt-[10px] mb-[10px] pr-[10] pl-[10] ${
+                    errors.deadline ? "border-red-500" : "border-gray-300"
+                  }`}
                   value={formData.deadline}
-                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, deadline: e.target.value })
+                  }
                 />
-                {errors.deadline && <p className="text-red-500 text-sm mt-1">{errors.deadline}</p>}
+                {errors.deadline && (
+                  <p className="text-red-500 text-sm mt-1">{errors.deadline}</p>
+                )}
               </div>
 
               {/* Notes */}
               <div>
-                <label className="block text-lg font-medium mb-2">Notes (Optional)</label>
+                <label className="block text-lg font-medium mb-2">
+                  Notes (Optional)
+                </label>
                 <input
                   className="w-full p-3 border border-gray-300 rounded-[15px] h-[36px] pl-[10px] pr-[10px] mt-[10px] mb-[10px]"
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                 />
               </div>
 
               {/* Media Upload */}
               <div>
-                <label className="block text-lg font-medium mb-2">Upload Media (Images/Video)</label>
+                <label className="block text-lg font-medium mb-2">
+                  Upload Media (Images/Video)
+                </label>
                 <label className="w-full p-4 border-2 border-dashed border-gray-300 rounded-[15px] h-[92px] mt-[10px] mb-[10px] flex flex-col items-center justify-center cursor-pointer">
                   <PlusCircle className="w-8 h-8 text-gray-400 mb-2" />
-                  <span className="text-gray-600">Click to upload or drag and drop</span>
+                  <span className="text-gray-600">
+                    Click to upload or drag and drop
+                  </span>
                   <input
                     type="file"
                     className="hidden"
@@ -176,7 +231,11 @@ export default function CreateNewProject() {
                   />
                 </label>
                 <div className="mt-4 grid grid-cols-3 gap-2">
-                {errors.media && <p className="text-red-500 text-sm mt-1 w-[300px]">{errors.media}</p>}
+                  {errors.media && (
+                    <p className="text-red-500 text-sm mt-1 w-[300px]">
+                      {errors.media}
+                    </p>
+                  )}
                   {formData.media.map((file, index) => (
                     <div key={index} className="relative group">
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -185,11 +244,15 @@ export default function CreateNewProject() {
                           className="text-white"
                           onClick={() => removeFile(index)}
                         >
-                          {errors.media && <p className="text-red-500 text-sm mt-1">{errors.deadline}</p>}
+                          {errors.media && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {errors.deadline}
+                            </p>
+                          )}
                           <XCircle className="w-6 h-6" />
                         </button>
                       </div>
-                      {file.type.startsWith('image/') ? (
+                      {file.type.startsWith("image/") ? (
                         <img
                           src={URL.createObjectURL(file)}
                           alt={`Preview ${index}`}
@@ -207,7 +270,7 @@ export default function CreateNewProject() {
               </div>
 
               {/* Buttons */}
-              <div className="flex gap-4 mt-8 gap-[15px] mt-[20px]"> 
+              <div className="flex gap-4 mt-8 gap-[15px] mt-[20px]">
                 <button
                   type="button"
                   onClick={() => router.back()}

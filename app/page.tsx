@@ -11,7 +11,8 @@ export default function Home() {
       <section className="pt-[140px] pb-0 px-6 text-center relative">
         <div className="max-w-[1100px] mx-auto relative z-10">
           <h1 className="text-[60px] leading-[70px] font-sen-bold mb-6 text-[#222222]">
-            Support Great Ideas,<br />
+            Support Great Ideas,
+            <br />
             Make Them Happen Together.
           </h1>
           <p className="text-[22px] text-[#5F5F75] mb-12 pt-[15px]">
@@ -27,7 +28,6 @@ export default function Home() {
               Explore
             </Button>
           </div>
-
         </div>
 
         {/* Ilustrasi Bawah */}
@@ -50,7 +50,8 @@ export default function Home() {
               Start your campaign today
             </h2>
             <p className="text-[20px] sm:text-[22px] text-[#5F5F75] max-w-3xl mx-auto">
-              Campoal has a variety of features that make it the best place to start a petition.
+              Campoal has a variety of features that make it the best place to
+              start a petition.
             </p>
           </div>
 
@@ -76,7 +77,11 @@ export default function Home() {
               ].map((item, i) => (
                 <div key={i} className="flex gap-6 items-start pt-[70px]">
                   <div className="bg-[#1AA179] w-[72px] h-[72px] flex items-center justify-center rounded-full shrink-0">
-                    <img src={`/icons/${item.icon}`} alt={item.title} className="w-[36px] h-[36px]" />
+                    <img
+                      src={`/icons/${item.icon}`}
+                      alt={item.title}
+                      className="w-[36px] h-[36px]"
+                    />
                   </div>
                   <div className="text-left pl-[15px]">
                     <h3 className="text-[26px] sm:text-[30px] font-sen-bold text-[#222222] mb-3">
