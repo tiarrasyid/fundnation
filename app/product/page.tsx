@@ -1,52 +1,36 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-
-const allProjects = [
-  {
-    id: 1,
-    category: "Tech",
-    name: "Tech Project A",
-    description: "Deskripsi singkat tentang project teknologi.",
-    deadline: "2025-06-01",
-    mediaUrls: ["/images/list-project.png"],
-    creator: "John Doe",
-    totalRaised: 5000,
-  },
-  {
-    id: 2,
-    category: "Food",
-    name: "Food Project B",
-    description: "Deskripsi singkat tentang project kuliner.",
-    deadline: "2025-07-15",
-    mediaUrls: ["/images/list-project.png"],
-    creator: "John Doe",
-    totalRaised: 5000,
-  },
-  {
-    id: 3,
-    category: "Service",
-    name: "Service Project C",
-    description: "Deskripsi singkat tentang project jasa.",
-    deadline: "2025-08-10",
-    mediaUrls: ["/images/list-project.png"],
-    creator: "John Doe",
-    totalRaised: 5000,
-  },
-];
+import { Project } from "@/types/project"; // Import interface Project
 
 function Page() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    const loadProjects = () => {
+      const savedProjects = localStorage.getItem("projects");
+      if (savedProjects) {
+        setProjects(JSON.parse(savedProjects));
+      }
+    };
+
+    loadProjects();
+    window.addEventListener("storage", loadProjects);
+    return () => window.removeEventListener("storage", loadProjects);
+  }, []);
 
   const filteredProjects =
     selectedCategory === "All"
-      ? allProjects
-      : allProjects.filter((p) => p.category === selectedCategory);
+      ? projects
+      : projects.filter((p) => p.category === selectedCategory);
+  // ? allProjects
+  // : allProjects.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-[#EFEEEA]">
@@ -90,7 +74,7 @@ function Page() {
           </div>
 
           {/* Project Grid */}
-          <div className="flex lg:flex-row items-start gap-20">
+          <div className="w-full grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {" "}
             {/* grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 */}
             {filteredProjects.map((project) => {
@@ -102,8 +86,8 @@ function Page() {
               return (
                 <div
                   key={project.id}
-                  onClick={() => router.push("/product/detail")}
-                  className="bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-[16px] ml-[25px] mb-[25px] shadow-md overflow-hidden w-[400px]"
+                  onClick={() => router.push(`/product/detail/${project.id}`)}
+                  className="bg-white shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] ml-[25px] mb-[25px] rounded-[16px] shadow-md overflow-hidden w-full max-w-[400px] cursor-pointer hover:shadow-lg transition-shadow duration-300"
                 >
                   {project.mediaUrls?.[0] && (
                     <img

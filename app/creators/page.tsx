@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import {
   CircleDollarSign,
@@ -10,9 +10,22 @@ import {
   Rocket,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 export default function CreatorsPage() {
   const router = useRouter();
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  if (!isLoaded || !user) {
+    return <div className="text-center p-8">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#EFEEEA]">
@@ -23,13 +36,27 @@ export default function CreatorsPage() {
           {/* Kiri - Profile */}
           <div className="w-full lg:w-[30%] pr-[50px]">
             <div className="w-[400px] h-[800px] bg-[#FFFFFF] rounded-[30px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] p-10 flex flex-col items-center text-center">
-              <CircleUserRound
-                width={80}
-                height={80}
-                className="mt-[25px] mb-[25px]"
-              />
-              <h3 className="text-[20px] font-semibold mt-4">Jason</h3>
-              <p className="text-[#666] text-sm">jason.evan@binus.ac.id</p>
+              <div className="mt-[47px] mb-[34px] flex justify-center">
+                {user.hasImage ? (
+                  <img
+                    src={user.imageUrl}
+                    alt="Profile"
+                    className="w-auto h-auto max-w-[100px] max-h-[100px] rounded-full object-cover border-4 border-[#01806D]"
+                  />
+                ) : (
+                  <CircleUserRound
+                    width={100}
+                    height={100}
+                    className="text-[#01806D]"
+                  />
+                )}
+              </div>
+              <h3 className="text-[20px] font-semibold mt-4">
+                {user?.fullName}
+              </h3>
+              <p className="text-[#666] text-sm">
+                {user?.emailAddresses[0].emailAddress}
+              </p>
               <hr className="w-[344px] border-t my-4 m-[15px]" />
               <span className="text-[#01806D] font-semibold">Creator</span>
             </div>

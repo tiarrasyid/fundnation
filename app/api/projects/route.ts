@@ -1,30 +1,29 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+// app/api/projects/[id]/route.ts
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
-const prisma = new PrismaClient();
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const project = await prisma.project.findUnique({
+      where: { id: params.id },
+    });
 
-export async function POST(req: Request) {
-  const data = await req.formData();
-
-  const mediaFiles = data.getAll('mediaUrls'); // Asumsikan URL sudah di-generate
-  const project = await prisma.project.create({
-    data: {
-      name: data.get('name') as string,
-      category: data.get('category') as string,
-      description: data.get('description') as string,
-      donation: parseInt(data.get('donation') as string),
-      deadline: new Date(data.get('deadline') as string),
-      notes: data.get('notes') as string || null,
-      mediaUrls: mediaFiles.map(url => url.toString()),
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project tidak ditemukan" },
+        { status: 404 }
+      );
     }
-  });
 
-  return NextResponse.json(project);
-}
-
-export async function GET() {
-  const projects = await prisma.project.findMany({
-    orderBy: { createdAt: 'desc' }
-  });
-  return NextResponse.json(projects);
+    return NextResponse.json(project);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Gagal memuat project" },
+      { status: 500 }
+    );
+  }
 }

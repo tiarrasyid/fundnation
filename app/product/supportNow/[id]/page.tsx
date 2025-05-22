@@ -1,12 +1,14 @@
 "use client";
 import Navbar from "@/components/Navbar";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 function Page() {
   const [amount, setAmount] = useState(5);
   const router = useRouter();
+  const params = useParams();
+  const projectId = params && Array.isArray(params.id) ? params.id[0] : params?.id || "";
   const presetAmounts = [5, 10, 20, 50];
 
   const handlePresetClick = (val: number) => {
@@ -19,8 +21,7 @@ function Page() {
   };
 
   const handleSupport = () => {
-    // Navigasi ke halaman konfirmasi dan bisa bawa data lewat query
-    router.push(`/product/payment?amount=${amount}`);
+    router.push(`/product/payment/${projectId}?amount=${amount}`);
   };
 
   return (

@@ -1,24 +1,31 @@
-'use client'
-import Navbar from '@/components/Navbar';
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { MoreVertical, Edit, Trash } from 'lucide-react';
+"use client";
+import Navbar from "@/components/Navbar";
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { MoreVertical, Edit, Trash } from "lucide-react";
+import { Project } from "@/types/project"; // Import interface Project
 
-const ViewAll = () => {
+export default function ViewAllProjects() {
   const router = useRouter();
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null); // Ubah tipe ke string
   const menuRef = useRef<HTMLDivElement>(null);
-  const [projects, setProjects] = useState([
-    { id: 1, name: "The Climate App", category: "Tech" },
-    { id: 2, name: "Support Baker’s through COVID–19", category: "Service" },
-    { id: 3, name: "The Food Shift Kitchen is Expanding!", category: "Food" },
-    { id: 4, name: "The Food Shift Kitchen is Expanding!", category: "Food" },
-    { id: 5, name: "The Food Shift Kitchen is Expanding!", category: "Food" },
-    { id: 6, name: "The Food Shift Kitchen is Expanding!", category: "Food" },
-  ]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  // Handle click outside to close menu
+  useEffect(() => {
+    const loadProjects = () => {
+      const savedProjects = localStorage.getItem("projects");
+      if (savedProjects) {
+        setProjects(JSON.parse(savedProjects));
+      }
+    };
+
+    loadProjects();
+    window.addEventListener("storage", loadProjects);
+    return () => window.removeEventListener("storage", loadProjects);
+  }, []);
+
+  // Handle click outside untuk menutup menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -26,18 +33,23 @@ const ViewAll = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleEdit = (projectId: number) => {
-    router.push(`/creators/edit/${projectId}`);
-    setOpenMenuId(null);
+  const handleEdit = (projectId: string) => {
+    router.push(`/creators/viewAll/edit/${projectId}`);
   };
 
-  const handleDelete = (projectId: number) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      setProjects(projects.filter(project => project.id !== projectId));
+  const handleDelete = (projectId: string) => {
+    // Ubah parameter ke string
+    if (window.confirm("Are you sure you want to delete this project?")) {
+      // Update localStorage dan state
+      const updatedProjects = projects.filter(
+        (project) => project.id !== projectId
+      );
+      localStorage.setItem("projects", JSON.stringify(updatedProjects));
+      setProjects(updatedProjects);
       setOpenMenuId(null);
     }
   };
@@ -59,22 +71,27 @@ const ViewAll = () => {
               </thead>
               <tbody>
                 {projects.map((project) => (
-                  <tr key={project.id} className="border-b hover:bg-gray-50 relative">
+                  <tr
+                    key={project.id}
+                    className="border-b hover:bg-gray-50 relative"
+                  >
                     <td className="py-3 px-4">{project.name}</td>
                     <td className="py-3 px-4">{project.category}</td>
                     <td className="py-3 px-4 text-center">
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setOpenMenuId(project.id === openMenuId ? null : project.id);
+                          setOpenMenuId(
+                            project.id === openMenuId ? null : project.id
+                          );
                         }}
                         className="p-1 hover:bg-gray-100"
                       >
                         <MoreVertical className="w-5 h-5" />
                       </button>
-                      
+
                       {openMenuId === project.id && (
-                        <div 
+                        <div
                           ref={menuRef}
                           className="absolute right-4 mt-1 w-32 bg-white border border-gray-200 rounded-md shadow-lg z-10"
                         >
@@ -100,7 +117,7 @@ const ViewAll = () => {
               </tbody>
             </table>
             <div className="mt-6 flex justify-end pt-[25px]">
-              <Button 
+              <Button
                 className="w-[65px] h-[36px] bg-[#169976] text-[#FFFFFF] text-[14px] font-sen-bold rounded-[8px] hover:bg-[#138a69] focus:outline-none"
                 onClick={() => router.back()}
               >
@@ -118,6 +135,4 @@ const ViewAll = () => {
       </footer>
     </div>
   );
-};
-
-export default ViewAll;
+}

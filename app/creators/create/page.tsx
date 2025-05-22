@@ -1,12 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
-import Image from "next/image";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { PlusCircle, XCircle } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+
+interface MediaFile {
+  url: string;
+  name: string;
+}
 
 export default function CreateNewProject() {
   const router = useRouter();
+  const { user } = useUser();
+
   const [formData, setFormData] = useState({
     name: "",
     category: "Tech",
@@ -14,7 +22,7 @@ export default function CreateNewProject() {
     donation: "",
     deadline: "",
     notes: "",
-    media: [] as File[],
+    media: [] as MediaFile[],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -27,6 +35,16 @@ export default function CreateNewProject() {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 3000);
   };
+
+  useEffect(() => {
+    return () => {
+      formData.media.forEach((file) => {
+        if (file.url.startsWith("blob:")) {
+          URL.revokeObjectURL(file.url);
+        }
+      });
+    };
+  }, [formData.media]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +65,40 @@ export default function CreateNewProject() {
       return;
     }
 
+    // Di creators/create/page.tsx
+    // const newProject = {
+    //   id: Date.now().toString(), // Gunakan string ID
+    //   // ... properti lainnya
+    //   mediaUrls: formData.media.map((m) => ({
+    //     name: m.name,
+    //     // Simpan hanya metadata, bukan data URL
+    //     url: m.url.startsWith("blob:") ? "" : m.url,
+    //   })),
+    // };
+
+    // Simpan ke localStorage
+    const newProject = {
+      id: Date.now().toString(),
+      category: formData.category,
+      name: formData.name,
+      description: formData.description,
+      deadline: formData.deadline,
+      mediaUrls: formData.media.map((m) => m.url),
+      creator:
+        user?.fullName ||
+        user?.primaryEmailAddress?.emailAddress ||
+        "Anonymous",
+      totalRaised: 0,
+      donationTarget: Number(formData.donation),
+      notes: formData.notes,
+    };
+
+    const existingProjects = JSON.parse(
+      localStorage.getItem("projects") || "[]"
+    );
+    const updatedProjects = [...existingProjects, newProject];
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+
     // Simulasi submit sukses
     console.log("Form data:", formData);
     showNotification("success", "Project created successfully ");
@@ -55,12 +107,106 @@ export default function CreateNewProject() {
     setTimeout(() => {
       router.push("/creators");
     }, 1000);
+
+    try {
+      localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    } catch (error) {
+      if (
+        error instanceof DOMException &&
+        error.name === "QuotaExceededError"
+      ) {
+        showNotification(
+          "error",
+          "Storage full! Please delete some old projects"
+        );
+        return;
+      }
+      throw error;
+    }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      setFormData({ ...formData, media: [...formData.media, ...files] });
+  const compressImage = async (file: File): Promise<MediaFile> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target?.result as string;
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_SIZE = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              const compressedFile = new File([blob as Blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+
+              const reader = new FileReader();
+              reader.onload = () =>
+                resolve({
+                  url: reader.result as string,
+                  name: file.name,
+                });
+              reader.readAsDataURL(compressedFile);
+            },
+            "image/jpeg",
+            0.7
+          );
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      try {
+        const files = Array.from(e.target.files);
+        if (files.length + formData.media.length > 5) {
+          showNotification("error", "Maximum 5 files allowed");
+          return;
+        }
+
+        const newMedia = await Promise.all(
+          files.slice(0, 5 - formData.media.length).map(async (file) => {
+            if (file.type.startsWith("image/")) {
+              return await compressImage(file);
+            }
+            return {
+              url: URL.createObjectURL(file),
+              name: file.name,
+            };
+          })
+        );
+
+        setFormData((prev) => ({
+          ...prev,
+          media: [...prev.media, ...newMedia],
+        }));
+      } catch {
+        showNotification("error", "Error processing files");
+      }
     }
   };
 
@@ -236,12 +382,12 @@ export default function CreateNewProject() {
                       {errors.media}
                     </p>
                   )}
-                  {formData.media.map((file, index) => (
+                  {formData.media.map((mediaFile, index) => (
                     <div key={index} className="relative group">
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           type="button"
-                          className="text-white"
+                          className="h-[36px] w-[36px] flex items-center gap-2 justify-center border border-[#01806D] text-[#01806D] px-6 py-3 rounded-[8px] sm:w-auto"
                           onClick={() => removeFile(index)}
                         >
                           {errors.media && (
@@ -252,18 +398,18 @@ export default function CreateNewProject() {
                           <XCircle className="w-6 h-6" />
                         </button>
                       </div>
-                      {file.type.startsWith("image/") ? (
+                      {mediaFile.url.startsWith("data:image/") ? (
                         <img
-                          src={URL.createObjectURL(file)}
+                          src={mediaFile.url}
                           alt={`Preview ${index}`}
-                          className="w-full h-24 object-cover rounded"
+                          className="w-[122px] h-[92] object-cover rounded-[8px]"
                         />
                       ) : (
-                        <video className="w-full h-24 object-cover rounded">
-                          <source src={URL.createObjectURL(file)} />
+                        <video className="w-[122px] h-[92] object-cover rounded-[8px]">
+                          <source src={mediaFile.url} />
                         </video>
                       )}
-                      <p className="text-xs truncate mt-1">{file.name}</p>
+                      <p className="text-xs truncate mt-1">{mediaFile.name}</p>
                     </div>
                   ))}
                 </div>
@@ -290,7 +436,7 @@ export default function CreateNewProject() {
 
           {/* Image Section */}
           <div className="relative mt-20 z-0 pb-[100px] w-full ml-[20px] pt-[200px]">
-            <Image
+            <NextImage
               src="/images/projections.svg"
               alt="Project Illustration"
               width={461}

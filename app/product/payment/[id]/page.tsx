@@ -2,13 +2,38 @@
 import Navbar from "@/components/Navbar";
 import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 function Page() {
   const router = useRouter();
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const projectId = params?.id as string;
+  const amount = parseInt(searchParams?.get("amount") || "0");
+
+  type Project = {
+    id: string;
+    totalRaised: number;
+    [key: string]: unknown;
+  };
 
   const handleDone = () => {
+    // Update totalRaised di localStorage
+    const projects: Project[] = JSON.parse(
+      localStorage.getItem("projects") || "[]"
+    );
+    const updatedProjects = projects.map((project: Project) => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          totalRaised: project.totalRaised + amount,
+        };
+      }
+      return project;
+    });
+
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
     router.push("/product");
   };
 
