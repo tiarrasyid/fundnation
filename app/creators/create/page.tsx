@@ -50,7 +50,6 @@ export default function CreateNewProject() {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
-    // Validasi required fields
     if (!formData.name.trim()) newErrors.name = "Project name is required";
     if (!formData.description.trim())
       newErrors.description = "Description is required";
@@ -65,18 +64,6 @@ export default function CreateNewProject() {
       return;
     }
 
-    // Di creators/create/page.tsx
-    // const newProject = {
-    //   id: Date.now().toString(), // Gunakan string ID
-    //   // ... properti lainnya
-    //   mediaUrls: formData.media.map((m) => ({
-    //     name: m.name,
-    //     // Simpan hanya metadata, bukan data URL
-    //     url: m.url.startsWith("blob:") ? "" : m.url,
-    //   })),
-    // };
-
-    // Simpan ke localStorage
     const newProject = {
       id: Date.now().toString(),
       category: formData.category,
@@ -99,11 +86,9 @@ export default function CreateNewProject() {
     const updatedProjects = [...existingProjects, newProject];
     localStorage.setItem("projects", JSON.stringify(updatedProjects));
 
-    // Simulasi submit sukses
     console.log("Form data:", formData);
     showNotification("success", "Project created successfully ");
 
-    // Redirect setelah submit sukses
     setTimeout(() => {
       router.push("/creators");
     }, 1000);
@@ -216,6 +201,16 @@ export default function CreateNewProject() {
     setFormData({ ...formData, media: newFiles });
   };
 
+  const formatCurrency = (value: string) => {
+    const num = parseInt(value.replace(/\D/g, ""), 10) || 0;
+    return num.toLocaleString("id-ID");
+  };
+
+  const handleDonationChange = (value: string) => {
+    const rawValue = value.replace(/\D/g, "");
+    setFormData({ ...formData, donation: rawValue });
+  };
+
   return (
     <div className="min-h-screen bg-[#EFEEEA]">
       <Navbar />
@@ -309,14 +304,13 @@ export default function CreateNewProject() {
                     Rp
                   </span>
                   <input
-                    type="number"
+                    type="text"
                     className={`w-full pl-10 p-3 border rounded-[15px] h-[36px] pl-[33px] mt-[10px] mb-[10px] ${
                       errors.donation ? "border-red-500" : "border-gray-300"
                     }`}
-                    value={formData.donation}
-                    onChange={(e) =>
-                      setFormData({ ...formData, donation: e.target.value })
-                    }
+                    value={formatCurrency(formData.donation)}
+                    onChange={(e) => handleDonationChange(e.target.value)}
+                    placeholder="0"
                   />
                 </div>
                 {errors.donation && (

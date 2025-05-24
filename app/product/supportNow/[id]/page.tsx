@@ -3,24 +3,53 @@ import Navbar from "@/components/Navbar";
 import React, { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Project } from "@/types/project";
 
 function Page() {
-  const [amount, setAmount] = useState(5);
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID").format(value);
+  };
+  const [amount, setAmount] = useState<number>(5000);
+  const [displayAmount, setDisplayAmount] = useState<string>(
+    formatCurrency(5000)
+  );
   const router = useRouter();
   const params = useParams();
-  const projectId = params && Array.isArray(params.id) ? params.id[0] : params?.id || "";
-  const presetAmounts = [5, 10, 20, 50];
+  const projectId =
+    params && Array.isArray(params.id) ? params.id[0] : params?.id || "";
+  const presetAmounts = [5000, 20000, 50000, 100000];
 
   const handlePresetClick = (val: number) => {
     setAmount(val);
+    setDisplayAmount(formatCurrency(val));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    setAmount(isNaN(value) ? 0 : value);
+    const rawValue = e.target.value.replace(/\D/g, "");
+    const numericValue = parseInt(rawValue) || 0;
+
+    setAmount(numericValue);
+    setDisplayAmount(rawValue === "" ? "" : formatCurrency(numericValue));
   };
 
   const handleSupport = () => {
+    if (amount < 5000) {
+      alert("Minimum donation is Rp. 5,000");
+      return;
+    }
+
+    const projects: Project[] = JSON.parse(
+      localStorage.getItem("projects") || "[]"
+    );
+    const project = projects.find((p) => p.id === projectId);
+
+    if (!project) return;
+
+    if (project.isWithdrawn || project.status === "done") {
+      alert("Proyek ini sudah selesai dan tidak dapat menerima donasi");
+      return;
+    }
+
     router.push(`/product/payment/${projectId}?amount=${amount}`);
   };
 
@@ -42,28 +71,31 @@ function Page() {
           <div className="pl-[408px] pr-[408px] pb-[221]px">
             <div className="flex justify-left items-left mb-6 w-full">
               <span className="bg-[#F2EFE8] text-[24px] font-sen-bold w-[56px] h-[56px] border border-[#ccc] rounded-l-[10px] flex items-center justify-center">
-                $
+                Rp{" "}
               </span>
               <input
-                type="number"
-                value={amount}
+                type="text"
+                value={displayAmount}
                 onChange={handleInputChange}
                 className="w-[382px] h-[56px] text-[24px] font-sen-bold text-center text-xl border-t border-b border-r border-[#ccc] rounded-r-[10px] py-3 outline-none"
+                inputMode="numeric"
+                placeholder="0"
+                maxLength={15}
               />
             </div>
 
-            <div className="flex justify-center gap-[36px] pt-[24px] pb-[24px] flex-wrap">
+            <div className="flex justify-center gap-[30px] pt-[24px] pb-[24px] flex-wrap">
               {presetAmounts.map((val) => (
                 <button
                   key={val}
                   onClick={() => handlePresetClick(val)}
-                  className={`px-6 py-3 w-[128px] h-[56px] rounded-[10px] text-[24px] font-sen-bold  border transition ${
+                  className={`px-6 py-3 w-[133px] h-[56px] rounded-[10px] text-[20px] font-sen-bold border transition ${
                     amount === val
                       ? "bg-[#169976] text-white"
                       : "bg-[#F2EFE8] text-[#222] hover:bg-[#ddd]"
                   }`}
                 >
-                  ${val}
+                  Rp {formatCurrency(val)}
                 </button>
               ))}
             </div>

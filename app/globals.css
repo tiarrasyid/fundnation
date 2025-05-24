@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -8,7 +8,7 @@
 :root {
   --brand-dark: #222222;
   --brand-primary: #169976;
-  --brand-accent: #1DCD9F;
+  --brand-accent: #1dcd9f;
 }
 
 /* Reset CSS dan base styles */
@@ -16,7 +16,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Sen', sans-serif; /* Ganti Arial dengan Sen */
+  font-family: "Sen", sans-serif; /* Ganti Arial dengan Sen */
 }
 
 /* Navbar styles */
@@ -26,7 +26,7 @@
   align-items: center;
   padding: 1rem 5%;
   background-color: var(--brand-dark);
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .nav-item.active {
@@ -53,8 +53,8 @@
 
 /* Fitur cards */
 .feature-card {
-  background: #FFFFFF;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Footer */
@@ -64,12 +64,12 @@
 }
 
 .font-sen-bold {
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
   font-weight: 700;
 }
 
 body {
-  font-family: 'Sen', sans-serif;
+  font-family: "Sen", sans-serif;
   background: #222222;
 }
 

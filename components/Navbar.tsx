@@ -1,144 +1,83 @@
 "use client";
-
-import { UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/navigation';
+import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react"; // Tambahkan ini
 
 const Navbar = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
-  // Fungsi untuk menentukan path berdasarkan nama item
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const getPathForItem = (item: string) => {
     switch (item) {
-      case 'Home':
-        return '/';
-      case 'Projects':
-        return '/product';
-      case 'About Us':
-        return '/about_us';
+      case "Home":
+        return "/";
+      case "Projects":
+        return "/product";
+      case "About Us":
+        return "/about_us";
       default:
-        return '/';
+        return "/";
     }
   };
 
+  if (!isMounted) return null; // Tambahkan ini
+
   return (
-    <nav className="navbar">
-      {/* Logo Text */}
-      <div className="logo-text">FundNation</div>
+    <nav className="flex justify-between items-center h-[100px] bg-[#222222] px-[50px] w-full">
+      {/* Logo */}
+      <div className="logo-text text-[25px] font-sen-bold text-[#ffffff]">
+        FundNation
+      </div>
 
       {/* Navigation Items */}
-      <div className="nav-items">
-        {['Home', 'Projects', 'About Us'].map((item) => (
-          <Link
-            href={getPathForItem(item)}
-            key={item}
-            className={`nav-item ${pathname === getPathForItem(item) ? 'active' : ''}`}
-          >
-            {item}
-          </Link>
-        ))}
+      <div className="flex gap-[51px]">
+        {["Home", "Projects", "About Us"].map((item) => {
+          const isActive = pathname === getPathForItem(item);
+          return (
+            <Link
+              href={getPathForItem(item)}
+              key={item}
+              className={`text-[20px] font-sen-bold no-underline ${
+                isActive ? "text-[#1dcd9f]" : "text-[#FFFFFF]"
+              } hover:text-[#1dcd9f] transition-colors`}
+            >
+              {item}
+            </Link>
+          );
+        })}
       </div>
 
       {/* Auth Buttons */}
-      <div className="auth-buttons">
-        <button className="creator-btn" onClick={() => router.push('/creators')}>
+      <div className="flex items-center gap-[27px]">
+        <button
+          onClick={() => router.push("/creators")}
+          className="bg-[#169976] text-[#ffffff] text-[20px] font-sen-bold h-[50px] w-[166px] rounded-[15px] hover:bg-[#138a69] transition-colors"
+        >
           For Creators
         </button>
 
         <SignedOut>
           <button
-            className="login-btn"
-            onClick={() => router.push('/sign-in')}
+            onClick={() => router.push("/sign-in")}
+            className="bg-transparent border-none text-[#ffffff] text-[20px] font-sen-bold transition-colors"
           >
             Login
           </button>
         </SignedOut>
 
         <SignedIn>
-          <UserButton afterSignOutUrl="/sign-in" />
+          <div className="text-white">
+            <UserButton afterSignOutUrl="/sign-in" />
+          </div>
         </SignedIn>
       </div>
-
-      {/* Style */}
-      <style jsx>{`
-        .navbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0 50px;
-          height: 100px;
-          background-color: #222222;
-        }
-
-        .logo-text {
-          font-family: 'Sen', sans-serif;
-          font-weight: 700;
-          font-size: 25px;
-          color: #FFFFFF;
-        }
-
-        .nav-items {
-          display: flex;
-          gap: 40px;
-          font-family: 'Sen', sans-serif;
-          font-weight: 700;
-          font-size: 20px;
-          color: #FFFFFF;
-        }
-
-        .nav-item {
-          position: relative;
-          text-decoration: none;
-          color: inherit;
-        }
-
-        .nav-item.active {
-          color: #1DCD9F;
-        }
-
-        .nav-item.active::after {
-          content: '';
-          position: absolute;
-          bottom: -10px;
-          left: 0;
-          width: 100%;
-          height: 3px;
-          background-color: #1DCD9F;
-        }
-
-        .auth-buttons {
-          display: flex;
-          gap: 20px;
-          align-items: center;
-        }
-
-        .creator-btn {
-          font-family: 'Sen', sans-serif;
-          font-weight: 700;
-          font-size: 18px;
-          color: #FFFFFF;
-          background-color: #169976;
-          border: none;
-          border-radius: 15px;
-          width: 150px;
-          height: 40px;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-
-        .login-btn {
-          font-family: 'Sen', sans-serif;
-          font-weight: 700;
-          font-size: 18px;
-          color: #FFFFFF;
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 0 15px;
-        }
-      `}</style>
     </nav>
   );
 };

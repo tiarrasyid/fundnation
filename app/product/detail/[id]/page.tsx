@@ -15,7 +15,6 @@ export default function ProjectDetailPage() {
   const [daysLeft, setDaysLeft] = useState(0);
   const { isLoaded, isSignedIn, user } = useUser();
 
-  // Move projectId outside useEffect so it's accessible in the dependency array
   const projectId =
     params && Array.isArray(params.id)
       ? params.id[0]
@@ -152,16 +151,34 @@ export default function ProjectDetailPage() {
                 <div className="mb-[20px] mt-[20px]">
                   {" "}
                   <Button
+                    disabled={project.totalRaised >= project.donationTarget}
                     onClick={() =>
                       router.push(`/product/supportNow/${project.id}`)
                     }
-                    className="w-[166px] h-[50px] bg-[#169976] text-[#FFFFFF] text-lg font-bold rounded-[15px] 
-                    hover:bg-[#138a69] transition-colors shadow-md text-[22px] font-sen-bold"
+                    className={`min-w-[166px]  h-[50px] text-lg text-[#ffffff] font-bold rounded-[15px] shadow-md text-[22px] font-sen-bold ${
+                      project.totalRaised >= project.donationTarget
+                        ? "bg-[#169976] cursor-not-allowed pr-[15px] pl-[15px]"
+                        : "bg-[#169976] hover:bg-[#138a69]"
+                    }`}
                   >
-                    Donate
+                    {project.totalRaised >= project.donationTarget
+                      ? "Funding Completed"
+                      : "Donate"}
                   </Button>
                 </div>
               </div>
+
+              {/* <div className="mb-4">
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className="bg-[#169976] h-2.5 rounded-full"
+                    style={{ width: `${project.progressPercentage}%` }}
+                  ></div>
+                </div>
+                <div className="text-sm text-gray-500 mt-1">
+                  Terkumpul {project.progressPercentage.toFixed(1)}% dari target
+                </div>
+              </div> */}
 
               <div className="bg-[#F6F6F6] w-full p-6 rounded-[15px] space-y-4 p-[20px]">
                 {" "}

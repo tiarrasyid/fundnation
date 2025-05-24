@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Project } from "@/types/project"; // Import interface Project
+import { Project } from "@/types/project";
 
 function Page() {
   const router = useRouter();
@@ -16,7 +16,17 @@ function Page() {
     const loadProjects = () => {
       const savedProjects = localStorage.getItem("projects");
       if (savedProjects) {
-        setProjects(JSON.parse(savedProjects));
+        const projects: Project[] = JSON.parse(savedProjects);
+
+        const updatedProjects = projects.map((p) => ({
+          ...p,
+          status:
+            p.totalRaised >= p.donationTarget
+              ? ("done" as const)
+              : ("active" as const),
+        }));
+
+        setProjects(updatedProjects);
       }
     };
 
@@ -27,10 +37,10 @@ function Page() {
 
   const filteredProjects =
     selectedCategory === "All"
-      ? projects
-      : projects.filter((p) => p.category === selectedCategory);
-  // ? allProjects
-  // : allProjects.filter((p) => p.category === selectedCategory);
+      ? projects.filter((p) => p.status === "active")
+      : projects.filter(
+          (p) => p.category === selectedCategory && p.status === "active"
+        );
 
   return (
     <div className="min-h-screen bg-[#EFEEEA]">
@@ -104,7 +114,7 @@ function Page() {
                       {project.name}
                     </h3>
                     <div className="text-sm text-gray-700 mb-2 flex items-center">
-                      <span className="mr-1">💰</span> $
+                      <span className="mr-1">💰</span> Rp 
                       {project.totalRaised.toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-700 mb-2 flex items-center">

@@ -1,4 +1,5 @@
 export interface Project {
+  progressPercentage: any;
   id: string;
   name: string;
   category: string;
@@ -9,4 +10,7 @@ export interface Project {
   totalRaised: number;
   donationTarget: number;
   notes?: string;
+  status: "active" | "done";
+  isWithdrawn?: boolean;
+  withdrawalDate?: string;
 }
