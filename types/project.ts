@@ -1,5 +1,4 @@
 export interface Project {
-  progressPercentage: any;
   id: string;
   name: string;
   category: string;

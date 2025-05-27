@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import { Project } from "@/types/project";
 import { useUser } from "@clerk/nextjs";
+import { Report } from "@/types/report";
 
 export default function ProjectDetailPage() {
   const router = useRouter();
@@ -14,6 +15,9 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [daysLeft, setDaysLeft] = useState(0);
   const { isLoaded, isSignedIn, user } = useUser();
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [hasReported, setHasReported] = useState(false);
 
   const projectId =
     params && Array.isArray(params.id)
@@ -56,6 +60,18 @@ export default function ProjectDetailPage() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [params, params?.id, router, isLoaded, isSignedIn, projectId]);
 
+  useEffect(() => {
+    if (user?.id) {
+      const reports: Report[] = JSON.parse(
+        localStorage.getItem("reports") || "[]"
+      );
+      const userReport = reports.find(
+        (r) => r.userId === user.id && r.projectId === projectId
+      );
+      setHasReported(!!userReport);
+    }
+  }, [user, projectId]);
+
   if (!isLoaded || !user) {
     return <div className="text-center p-8">Loading...</div>;
   }
@@ -68,6 +84,33 @@ export default function ProjectDetailPage() {
       </div>
     );
   }
+
+  // Fungsi handle report
+  const handleReport = async () => {
+    if (!user || !reportReason) return;
+
+    const newReport: Report = {
+      projectId,
+      userId: user.id,
+      reason: reportReason as Report["reason"], // Type casting
+      timestamp: new Date(),
+    };
+    try {
+      const existingReports = JSON.parse(
+        localStorage.getItem("reports") || "[]"
+      );
+      const updatedReports = [...existingReports, newReport];
+
+      localStorage.setItem("reports", JSON.stringify(updatedReports));
+      setHasReported(true);
+      setShowReportModal(false);
+      setReportReason("");
+      alert("Thanks for the report! We will review this project.");
+    } catch (error) {
+      console.error("Failed to save report:", error);
+      alert("Failed to send report. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#EFEEEA]">
@@ -168,28 +211,104 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
 
-              {/* <div className="mb-4">
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    className="bg-[#169976] h-2.5 rounded-full"
-                    style={{ width: `${project.progressPercentage}%` }}
-                  ></div>
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  Terkumpul {project.progressPercentage.toFixed(1)}% dari target
-                </div>
-              </div> */}
-
               <div className="bg-[#F6F6F6] w-full p-6 rounded-[15px] space-y-4 p-[20px]">
                 {" "}
                 {project.notes && (
-                  <div className="bg-[#F6F6F6] w-full p-6 rounded-[15px] mt-6">
+                  <div className="bg-[#F6F6F6] w-full max-w-[550px] p-6 rounded-[15px] mt-6">
                     <h3 className="text-xl font-bold text-[#2B2B39] mb-3">
                       Project Notes:
                     </h3>
                     <p className="text-[#444] leading-relaxed">
                       {project.notes}
                     </p>
+                  </div>
+                )}
+              </div>
+              <div className="mb-[20px] mt-[20px]">
+                <div className="mt-6">
+                  <Button
+                    onClick={() => {
+                      setReportReason("");
+                      setShowReportModal(true);
+                    }}
+                    disabled={hasReported}
+                    className="min-w-[140px] h-[40px] p-[13px] text-[#169976] bg-[#ffffff] text-lg font-bold rounded-[10px] shadow-md text-[15px] font-sen-bold"
+                  >
+                    {hasReported
+                      ? "Thank You For Reporting"
+                      : "Report This Project"}
+                  </Button>
+                </div>
+                {showReportModal && (
+                  <div className="inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white p-[10px] rounded-lg max-w-md w-full mx-4">
+                      <h3 className="text-xl font-bold mb-4">
+                        Select Report Reason
+                      </h3>
+
+                      {/* Daftar Alasan Report */}
+                      <div className="space-y-4 mb-[20px] mt-[10px]">
+                        <div
+                          onClick={() => setReportReason("rules_violation")}
+                          className={`border rounded-[10px] p-[15px] mb-[10px] cursor-pointer transition-colors ${
+                            reportReason === "rules_violation"
+                              ? "border-[#01806D] bg-[#01806D]/10"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <h4 className="font-medium">
+                            This project breaks one of our rules
+                          </h4>
+                        </div>
+
+                        <div
+                          onClick={() => setReportReason("spam_abuse")}
+                          className={`border rounded-[10px] p-[15px]  mb-[10px] cursor-pointer transition-colors ${
+                            reportReason === "spam_abuse"
+                              ? "border-[#01806D] bg-[#01806D]/10"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <h4 className="font-medium">
+                            Report spam or abusive behavior
+                          </h4>
+                        </div>
+
+                        <div
+                          onClick={() => setReportReason("ip_violation")}
+                          className={`border rounded-[10px] p-[15px]  mb-[10px] cursor-pointer transition-colors ${
+                            reportReason === "ip_violation"
+                              ? "border-[#01806D] bg-[#01806D]/10"
+                              : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        >
+                          <h4 className="font-medium">
+                            Intellectual property violation
+                          </h4>
+                        </div>
+                      </div>
+
+                      {/* Tombol Aksi */}
+                      <div className="flex justify-start gap-[10px]">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowReportModal(false);
+                            setReportReason("");
+                          }}
+                          className="h-[36px] flex items-center gap-2 justify-center border border-[#01806D] text-[#01806D] px-6 py-3 rounded-[8px] text-[14px] font-semibold w-[79px] sm:w-auto"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleReport}
+                          disabled={!reportReason || hasReported}
+                          className="w-auto pl-[15px] pr-[15px] h-[36px] bg-[#169976] text-[#FFFFFF] text-[14px] font-sen-bold rounded-[8px] border-[#169976] hover:bg-[#f2f2f0] focus:outline-none"
+                        >
+                          Submit Report
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
