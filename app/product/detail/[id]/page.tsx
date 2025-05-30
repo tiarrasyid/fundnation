@@ -116,7 +116,7 @@ export default function ProjectDetailPage() {
     <div className="min-h-screen bg-[#EFEEEA]">
       <Navbar />
 
-      <section className="py-24 px-6 bg-[#EFEEEA] flex justify-center pt-[70px] pb-[70px] pr-[36px] pl-[36px]">
+      <section className="py-24 px-6 bg-[#EFEEEA] h-auto flex justify-center pt-[70px] pb-[70px] pr-[36px] pl-[36px]">
         <div className="bg-[#FFFFFF] w-[1440px] max-w-[1440px] rounded-[15px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] p-16 sm:p-20">
           <div className="flex lg:flex-row items-start gap-20 pt-[75px] pb-[120px] pl-[120px] pr-[120px]">
             {/* Media Section */}

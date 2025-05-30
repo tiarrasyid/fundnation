@@ -113,6 +113,16 @@ export default function EditProjectPage() {
     setFormData({ ...formData, mediaUrls: newMedia });
   };
 
+  const formatCurrency = (value: string) => {
+    const num = parseInt(value.replace(/\D/g, ""), 10) || 0;
+    return num.toLocaleString("id-ID");
+  };
+
+  const handleDonationChange = (value: string) => {
+    const rawValue = value.replace(/\D/g, "");
+    setFormData({ ...formData, donationTarget: rawValue });
+  };
+
   if (!project) return <div>Loading...</div>;
 
   return (
@@ -193,21 +203,18 @@ export default function EditProjectPage() {
                   Rp
                 </span>
                 <input
-                  type="number"
-                  value={formData.donationTarget}
-                  onChange={(e) =>
-                    setFormData({ ...formData, donationTarget: e.target.value })
-                  }
+                  type="text"
                   className={`w-full pl-10 p-3 border rounded-[15px] h-[36px] pl-[33px] mt-[10px] mb-[10px] ${
-                    errors.donationTarget ? "border-red-500" : ""
+                    errors.donationTarget ? "border-red-500" : "border-gray-300"
                   }`}
+                  value={formatCurrency(formData.donationTarget)}
+                  onChange={(e) => handleDonationChange(e.target.value)}
+                  placeholder="0"
                 />
-                {errors.donationTarget && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.donationTarget}
-                  </p>
-                )}
               </div>
+              {errors.donationTarget && (
+                <p className="text-red-500 text-sm mt-1">{errors.donationTarget}</p>
+              )}
             </div>
 
             {/* Deadline */}

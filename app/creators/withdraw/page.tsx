@@ -16,7 +16,7 @@ export default function WithdrawPage() {
         const projects: Project[] = JSON.parse(savedProjects);
         setCompletedProjects(
           projects.filter(
-            (p) => p.status === "done" && p.totalRaised > 0 && !p.isWithdrawn
+            (p) => p.status === "done" && p.totalRaised > 0
           )
         );
       }
@@ -33,26 +33,18 @@ export default function WithdrawPage() {
         localStorage.getItem("projects") || "[]"
       );
 
-      const updatedProjects = projects.map((project) => {
-        if (project.id === projectId) {
-          return {
-            ...project,
-            totalRaised: 0,
-            isWithdrawn: true,
-            status: "done",
-          };
-        }
-        return project;
-      });
+      // Delete the project after withdrawal
+      const updatedProjects = projects.filter(
+        (project) => project.id !== projectId
+      );
 
       localStorage.setItem("projects", JSON.stringify(updatedProjects));
       setCompletedProjects(
         updatedProjects.filter(
-          (p): p is Project =>
-            !p.isWithdrawn && (p.status === "done" || p.status === "active")
+          (p) => p.status === "done" && p.totalRaised > 0
         )
       );
-      toast.success("Withdrawal successful!");
+      toast.success("Withdrawal successful and project deleted!");
     } catch {
       toast.error("Failed to process withdrawal");
     } finally {
@@ -71,40 +63,46 @@ export default function WithdrawPage() {
               Withdraw Funds
             </h1>
             <div className="grid gap-[20px] max-h-[400px] overflow-y-auto pr-2">
-              {completedProjects
-                .filter((p) => p.status === "done")
-                .map((project) => (
-                  <div
-                    key={project.id}
-                    className="bg-white p-6 rounded-lg shadow-lg"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h2 className="text-xl font-semibold">
-                          {project.name}
-                        </h2>
-                        <p className="text-[#01806D] font-medium mt-2">
-                          Rp {project.totalRaised.toLocaleString("id-ID")}
-                        </p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Status: {project.status.toUpperCase()}
-                        </p>
+              {completedProjects.length > 0 ? (
+                completedProjects
+                  .filter((p) => p.status === "done")
+                  .map((project) => (
+                    <div
+                      key={project.id}
+                      className="bg-white p-6 rounded-lg shadow-lg"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h2 className="text-xl font-semibold">
+                            {project.name}
+                          </h2>
+                          <p className="text-[#01806D] font-medium mt-2">
+                            Rp {project.totalRaised.toLocaleString("id-ID")}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Status: {project.status.toUpperCase()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleWithdraw(project.id)}
+                          disabled={loading}
+                          className="h-[45px] flex items-center gap-2 justify-center border bg-[#01806D] text-[#FFFFFF] px-6 py-3 rounded-[10px] text-[20px] font-semibold w-auto pr-[20px] pl-[20px] sm:w-auto"
+                        >
+                          <BanknoteArrowDown
+                            width={20}
+                            height={20}
+                            className="mr-[10px]"
+                          />
+                          {loading ? "Processing..." : "Withdraw"}
+                        </button>
                       </div>
-                      <button
-                        onClick={() => handleWithdraw(project.id)}
-                        disabled={loading || project.status !== "done"}
-                        className="h-[45px] flex items-center gap-2 justify-center border bg-[#01806D] text-[#FFFFFF] px-6 py-3 rounded-[10px] text-[20px] font-semibold w-auto pr-[20px] pl-[20px] sm:w-auto"
-                      >
-                        <BanknoteArrowDown
-                          width={20}
-                          height={20}
-                          className="mr-[10px]"
-                        />
-                        {loading ? "Processing..." : "Withdraw"}
-                      </button>
                     </div>
-                  </div>
-                ))}
+                  ))
+              ) : (
+                <p className="text-center py-10 text-gray-500">
+                  No completed projects available for withdrawal
+                </p>
+              )}
             </div>
           </div>
         </section>
